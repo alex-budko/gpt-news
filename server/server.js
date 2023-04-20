@@ -7,9 +7,9 @@ const redis = new Redis();
 
 app.use(cors());
 
-app.get('/getLove', async (req, res) => {
+app.get('/getLove', async (_, res) => {
   const value = await redis.get('mykey');
-  res.json("5");
+  res.json({ value });
 });
 
 const PORT = process.env.PORT || 5000;
