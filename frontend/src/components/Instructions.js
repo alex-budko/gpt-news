@@ -1,11 +1,6 @@
 import {
   Box,
-  Button,
   Center,
-  HStack,
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
   VStack,
 } from "@chakra-ui/react";
 
@@ -13,9 +8,6 @@ function Instructions() {
   return (
     <Center>
       <VStack>
-        <Box padding="3" rounded={"2xl"} boxShadow={"3xl"} bg="blue.100" w="600px">
-          <SkeletonText startColor='purple.600' endColor='orange.500' mb="3" mt="4" noOfLines={5} spacing="2" skeletonHeight="3"  />
-        </Box>
         <Box p={"3"} bg={"blue.800"} rounded={"2xl"} boxShadow={"3xl"}>
           <b>Enter Your Interests</b>: Open the app and type your interests or
           topics into the search box. The GPT algorithm will generate a list of

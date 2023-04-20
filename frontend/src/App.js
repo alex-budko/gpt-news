@@ -10,7 +10,7 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NewsAggregator from "./components/NewsAggregator";
 import Instructions from "./components/Instructions";
 import LoveCount from "./components/LoveCount";
@@ -22,17 +22,6 @@ function App() {
   );
   const [tabIndex, setTabIndex] = useState(0);
   const bg = colors[tabIndex];
-
-  const [value, setValue] = useState("Hi");
-
-  useEffect(() => {
-    // async function fetchData() {
-    //   const response = await fetch('http://localhost:5000/getLove');
-    //   const data = await response.json();
-    //   setValue(data.value);
-    // }
-    // fetchData();
-  }, []);
 
   return (
     <Center>
