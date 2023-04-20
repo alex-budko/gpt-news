@@ -1,5 +1,4 @@
-import { Box, Center, HStack, Heading, useToast } from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Box, Center, HStack, useToast } from "@chakra-ui/react";
 import { AiFillHeart, AiFillInfoCircle, AiFillGithub } from "react-icons/ai";
 
 function LoveCount() {

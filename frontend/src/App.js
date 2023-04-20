@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import NewsAggregator from "./components/NewsAggregator";
 import Instructions from "./components/Instructions";
-import LoveCount from "./components/LoveCount";
+import Icons from "./components/Icons";
 
 function App() {
   const colors = useColorModeValue(
@@ -47,7 +47,7 @@ function App() {
             </TabPanel>
           </TabPanels>
         </Tabs>
-        <LoveCount />
+        <Icons />
       </VStack>
     </Center>
   );
