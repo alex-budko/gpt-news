@@ -46,7 +46,7 @@ function App() {
           bg={bg}
         >
           <TabList>
-            <Tab>News Aggregator</Tab>
+            <Tab>Chat</Tab>
             <Tab>Instructions</Tab>
           </TabList>
           <TabPanels isFitted p="2rem">

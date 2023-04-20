@@ -7,8 +7,10 @@ import {
     Input,
     Spinner,
     VStack,
+    Text
   } from "@chakra-ui/react";
-  import React, { useEffect, useState } from "react";
+  import React, { useState } from "react";
+  import {BsRobot, BsFillPersonFill} from 'react-icons/bs'
   
   function NewsAggregator() {
     const [messages, setMessages] = useState([]);
@@ -55,8 +57,8 @@ import {
               {messages.map((message, index) => (
                 <Box
                   key={index}
-                  bg={message.sender === "user" ? "gray.50" : "purple.600"}
-                  color={message.sender === "user" ? "black" : "white"}
+                  bg={message.sender === "user" ? "gray.50" : "blue.200"}
+                  color={message.sender === "user" ? "black" : "black"}
                   borderRadius="md"
                   p={2}
                   mb={2}
@@ -64,7 +66,10 @@ import {
                   minW={"100px"}
                   textAlign={"center"}
                 >
-                  {message.text}
+                    <HStack>
+                        {message.sender === "gpt" ? <BsRobot /> : <BsFillPersonFill />}
+                        <Text>{message.text}</Text>
+                    </HStack>
                 </Box>
               ))}
             </Flex>
@@ -73,8 +78,8 @@ import {
                 <Spinner
                     thickness="4px"
                     speed="0.65s"
-                    emptyColor="gray.200"
-                    color="purple.400"
+                    emptyColor="white"
+                    color="blue.400"
                     size="xl"
                 />
                 </Center>
@@ -89,6 +94,10 @@ import {
               color={"black"}
               w={"350px"}
               resize={"none"}
+              placeholder="Type in your interests..."
+              _placeholder={{
+                color: "gray.400"
+              }}
             />
             <Button onClick={handleButtonClick} colorScheme="purple" w={"100px"}>
               Send
