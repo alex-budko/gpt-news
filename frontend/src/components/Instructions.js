@@ -38,8 +38,8 @@ function Instructions() {
         </Box>
         <Link href="https://platform.openai.com/docs/models/gpt-3-5" isExternal>
           Made with{" "}
-          <Tooltip label="GPT 3.5" bg="gray.300" color="black">
-            <Kbd>text-davinci-002</Kbd>
+          <Tooltip label="GPT 3.0" bg="gray.300" color="black">
+            <Kbd>text-babbage-001</Kbd>
           </Tooltip>{" "}
           <ExternalLinkIcon mx="2px" />
         </Link>

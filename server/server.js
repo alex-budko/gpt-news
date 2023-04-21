@@ -19,7 +19,7 @@ app.post("/generate-article-suggestions", async (req, res) => {
   try {
     const prompt = req.body.prompt;
     const response = await openai.createCompletion({
-      model: "text-davinci-002",
+      model: "text-babbage-001",
       prompt: `News articles related to ${prompt}:`,
       max_tokens: 250,
     });
