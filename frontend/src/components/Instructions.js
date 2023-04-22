@@ -36,10 +36,10 @@ function Instructions() {
           search box. Refer to the app's help section or customer support for
           assistance if needed.
         </Box>
-        <Link href="https://platform.openai.com/docs/models/gpt-3-5" isExternal>
+        <Link href="https://platform.openai.com/docs/models/gpt-3" isExternal>
           Made with{" "}
           <Tooltip label="GPT 3.0" bg="gray.300" color="black">
-            <Kbd>text-babbage-001</Kbd>
+            <Kbd>text-curie-001</Kbd>
           </Tooltip>{" "}
           <ExternalLinkIcon mx="2px" />
         </Link>
