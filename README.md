@@ -1,9 +1,9 @@
-<h1>Personalized News Aggregator with GPT-3.0</h1>
-<p>This is a personalized news aggregator built using React and the GPT-2 model. It allows users to type in their interests, and the app will generate modern news articles that are popular and related to the user's tastes.</p>
+<h1>Personalized News Aggregator with GPT-3.5</h1>
+<p>This is a personalized news aggregator built using React and the GPT-3.5 model. It allows users to type in their interests, and the app will generate modern news articles that are popular and related to the user's tastes.</p>
 <h2>Features</h2>
 <ul>
   <li>User-friendly chat interface for users to input their interests</li>
-  <li>GPT-3.0 based news article generation</li>
+  <li>GPT-3.5 based news article generation</li>
   <li>Personalized news suggestions based on user input</li>
   <li>Responsive design suitable for various screen sizes</li>
 </ul>
