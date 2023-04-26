@@ -9,7 +9,7 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BsRobot, BsFillPersonFill } from "react-icons/bs";
 import "../NewsAggregator.css";
 
@@ -17,6 +17,15 @@ function NewsAggregator() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const messageEndRef = useRef(null);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleButtonClick = async () => {
     setMessages([...messages, { text: inputMessage, sender: "user" }]);
@@ -63,8 +72,9 @@ function NewsAggregator() {
       <VStack className="messages-container">
         <Box
           className="messages-container"
-          overflowY="scroll"
-          h="450px"
+          overflowY="auto"
+          minHeight={"450px"}
+          maxHeight="450px"
           bg={"gray.800"}
           rounded={"2xl"}
           w={"630px"}
@@ -75,6 +85,7 @@ function NewsAggregator() {
             direction="column"
             justify="flex-end"
             h={loading ? "85%" : "100%"}
+            ref={messageEndRef}
           >
             {messages.map((message, index) => (
               <Box
