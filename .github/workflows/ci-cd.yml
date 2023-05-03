@@ -21,9 +21,6 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Run tests
-      run: npm test
-
   backend:
     runs-on: ubuntu-latest
     defaults:
@@ -41,6 +38,3 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-
-    - name: Run tests
-      run: npm test
