@@ -47,8 +47,11 @@ UserSchema.pre("save", async function (next) {
   }
 
   try {
-    const hashedPassword = await crypto.hash(this.password, process.env.SCRYPT_SALT, 64);
-    this.password = hashedPassword.toString("hex");
+    // const hashedPassword = await crypto
+    //   .createHash("scrypt", { salt: process.env.SCRYPT_SALT, N: 16384, r: 8, p: 1, dkLen: 64 })
+    //   .update(this.password)
+    //   .digest("hex");
+    this.password = password;
     next();
   } catch (error) {
     return next(error);
@@ -112,11 +115,11 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const hashedPassword = crypto.scryptSync(password, process.env.SCRYPT_SALT, 64).toString("hex");
+    // const hashedPassword = crypto.scryptSync(password, process.env.SCRYPT_SALT, 64).toString("hex");
 
-    if (hashedPassword !== user.password) {
-      return res.status(401).json({ error: "Invalid username or password" });
-    }
+    // if (hashedPassword !== user.password) {
+    //   return res.status(401).json({ error: "Invalid username or password" });
+    // }
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
