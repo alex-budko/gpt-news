@@ -84,7 +84,6 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-server:${{ github.sha }}/" server.yaml
-        sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-frontend:${{ github.sha }}/" frontend.yaml
+        kubectl config use-context abudko-context --kubeconfig=kubeconfig.yaml
         kubectl apply -f server.yaml --kubeconfig=kubeconfig.yaml
         kubectl apply -f frontend.yaml --kubeconfig=kubeconfig.yaml
