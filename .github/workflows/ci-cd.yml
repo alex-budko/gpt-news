@@ -84,8 +84,6 @@ jobs:
 
     - name: Deploy to Kubernetes
       run: |
-        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
-        kubectl config use-context my-k8s-cluster --kubeconfig=kubeconfig.yaml
         sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-server:${{ github.sha }}/" server.yaml
         sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-frontend:${{ github.sha }}/" frontend.yaml
         kubectl apply -f server.yaml --kubeconfig=kubeconfig.yaml
