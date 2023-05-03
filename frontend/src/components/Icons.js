@@ -1,5 +1,6 @@
 import { Box, Center, HStack, useToast } from "@chakra-ui/react";
 import { AiFillHeart, AiFillInfoCircle, AiFillGithub } from "react-icons/ai";
+import React from "react";
 
 function LoveCount() {
   const toast = useToast();

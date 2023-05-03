@@ -11,7 +11,7 @@ import {
   Button,
   HStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import NewsAggregator from "./components/NewsAggregator";
 import Instructions from "./components/Instructions";
@@ -19,6 +19,7 @@ import Icons from "./components/Icons";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import { useAuth } from "./context/AuthContext";
+
 
 function App() {
   const colors = useColorModeValue(

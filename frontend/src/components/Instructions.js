@@ -10,6 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import React from "react";
 
 function Instructions() {
   return (
@@ -33,7 +34,7 @@ function Instructions() {
         <Box color="white" p={"3"} bg={"blue.800"} rounded={"2xl"} boxShadow={"dark-lg"}>
           <b>Save and Change</b>: Save or bookmark articles you find interesting
           and change your interests or topics by entering new keywords in the
-          search box. Refer to the app's help section or customer support for
+          search box. Refer to the apps help section or customer support for
           assistance if needed.
         </Box>
         <Link href="https://platform.openai.com/docs/models/gpt-3-5" isExternal>

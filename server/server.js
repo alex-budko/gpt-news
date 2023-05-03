@@ -1,17 +1,18 @@
-require("dotenv").config();
-const express = require("express");
-const crypto = require("crypto");
-const cors = require("cors");
+require('dotenv').config();
+const express = require('express');
+const crypto = require('crypto');
+const cors = require('cors');
+
 const app = express();
 const port = process.env.PORT || 3001;
 
-const passport = require("passport");
-const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
+const passport = require('passport');
+const JwtStrategy = require('passport-jwt').Strategy;
+const { ExtractJwt } = require('passport-jwt');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
-const { Configuration, OpenAIApi } = require("openai");
+const { Configuration, OpenAIApi } = require('openai');
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -24,14 +25,14 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.error("Error connecting to MongoDB:", error));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.error('Error connecting to MongoDB:', error));
 
 // Define User schema and model
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  location: { type: String, default: "US, NY" },
+  location: { type: String, default: 'US, NY' },
   messages: [
     {
       text: String,
@@ -41,8 +42,8 @@ const UserSchema = new mongoose.Schema({
   ],
 });
 
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     return next();
   }
 
@@ -57,7 +58,7 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model('User', UserSchema);
 
 // Passport JWT strategy
 const opts = {
@@ -71,13 +72,12 @@ passport.use(
       const user = await User.findById(jwt_payload.id);
       if (user) {
         return done(null, user);
-      } else {
-        return done(null, false);
       }
+      return done(null, false);
     } catch (error) {
       return done(error, false);
     }
-  })
+  }),
 );
 
 app.use(cors());
@@ -85,7 +85,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Auth routes
-app.post("/register", async (req, res) => {
+app.post('/register', async (req, res) => {
   try {
     const { username, password, location } = req.body;
     const user = new User({ username, password, location });
@@ -93,25 +93,25 @@ app.post("/register", async (req, res) => {
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: '2h',
     });
 
     res.status(201).json({ token });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Error registering user" });
+    res.status(500).json({ error: 'Error registering user' });
   }
 });
 
-app.post("/login", async (req, res) => {
+app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log("Received login request:", { username, password });
+    console.log('Received login request:', { username, password });
 
     const user = await User.findOne({ username });
-    console.log("User found:", user);
+    console.log('User found:', user);
     if (!user) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
 
     // const hashedPassword = crypto.scryptSync(password, process.env.SCRYPT_SALT, 64).toString("hex");
@@ -122,58 +122,58 @@ app.post("/login", async (req, res) => {
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: '2h',
     });
 
     res.status(200).json({ user, token });
   } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(500).json({ error: "Error logging in" });
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Error logging in' });
   }
 });
 
 // Protected route middleware
-const requireAuth = passport.authenticate("jwt", { session: false });
+const requireAuth = passport.authenticate('jwt', { session: false });
 
 // Save message and GPT response
-app.post("/save-message", requireAuth, async (req, res) => {
+app.post('/save-message', requireAuth, async (req, res) => {
   try {
     const { text, sender, gptResponses } = req.body;
 
     req.user.messages.push({ text, sender, gptResponses });
     await req.user.save();
 
-    res.status(200).json({ message: "Message saved" });
+    res.status(200).json({ message: 'Message saved' });
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: "Error saving message" });
+    console.log(error);
+    res.status(500).json({ error: 'Error saving message' });
   }
 });
 
 // Get all messages for the user
-app.get("/messages", requireAuth, async (req, res) => {
+app.get('/messages', requireAuth, async (req, res) => {
   try {
     res.status(200).json({ messages: req.user.messages });
   } catch (error) {
-    res.status(500).json({ error: "Error fetching messages" });
+    res.status(500).json({ error: 'Error fetching messages' });
   }
 });
 
-app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
+app.post('/generate-article-suggestions', requireAuth, async (req, res) => {
   try {
-    const prompt = req.body.prompt;
+    const { prompt } = req.body;
     const previousMessages = req.user.messages
-      .filter((message) => message.sender === "user")
+      .filter((message) => message.sender === 'user')
       .slice(-5)
       .map((message) => message.text)
-      .join("\n");
+      .join('\n');
 
     const context = `Previous queries of the user:${previousMessages}.
       \n User lives in ${req.user.location},
       \n Provide the user with some news articles related to the following topic: ${prompt}`;
 
     const response = await openai.createCompletion({
-      model: "text-davinci-003",
+      model: 'text-davinci-003',
       prompt: context,
       max_tokens: 250,
     });
@@ -182,7 +182,7 @@ app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
     // Save message and GPT response
     req.user.messages.push({
       text: prompt,
-      sender: "user",
+      sender: 'user',
       gptResponses: suggestions,
     });
     await req.user.save();
@@ -190,7 +190,7 @@ app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
     res.json({ suggestions });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Error generating article suggestions" });
+    res.status(500).json({ error: 'Error generating article suggestions' });
   }
 });
 
