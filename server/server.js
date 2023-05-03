@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const crypto = require("crypto");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3001;
@@ -8,7 +9,6 @@ const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
 const { Configuration, OpenAIApi } = require("openai");
@@ -19,7 +19,6 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-// Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -43,10 +42,17 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 10);
+  if (!this.isModified("password")) {
+    return next();
   }
-  next();
+
+  try {
+    const hashedPassword = await crypto.hash(this.password, process.env.SCRYPT_SALT, 64);
+    this.password = hashedPassword.toString("hex");
+    next();
+  } catch (error) {
+    return next(error);
+  }
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -90,6 +96,7 @@ app.post("/register", async (req, res) => {
 
     res.status(201).json({ token });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error registering user" });
   }
 });
@@ -105,9 +112,9 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    console.log("Password match:", passwordMatch);
-    if (!passwordMatch) {
+    const hashedPassword = crypto.scryptSync(password, process.env.SCRYPT_SALT, 64).toString("hex");
+
+    if (hashedPassword !== user.password) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
@@ -136,6 +143,7 @@ app.post("/save-message", requireAuth, async (req, res) => {
 
     res.status(200).json({ message: "Message saved" });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: "Error saving message" });
   }
 });

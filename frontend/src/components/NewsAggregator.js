@@ -69,14 +69,12 @@ function NewsAggregator() {
     }
   }, [token]);
 
-  // Fetch messages when the component mounts
   useEffect(() => {
     fetchMessages();
   }, [fetchMessages]);
 
   const handleButtonClick = async () => {
     setMessages([...messages, { text: inputMessage, sender: "user" }]);
-    saveMessage(inputMessage, "user", []);
 
     setInputMessage("");
 

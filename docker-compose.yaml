@@ -1,5 +1,5 @@
 services:
-  api:
+  server:
     build: ./server        
     ports:
       - "3001:3001"
@@ -7,7 +7,7 @@ services:
       - ./server:/server
     command: bash -c "node server.js"
 
-  web:
+  frontend:
     build: ./frontend
     ports:
       - "3000:3000"

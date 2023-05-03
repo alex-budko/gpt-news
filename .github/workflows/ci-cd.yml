@@ -21,6 +21,15 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Run tests
+      run: npm test
+
+    - name: Build and push Docker image
+      run: |
+        docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+        docker build -t alexbudko/gpt-news-frontend:${{ github.sha }} .
+        docker push alexbudko/gpt-news-frontend:${{ github.sha }}
+
   backend:
     runs-on: ubuntu-latest
     defaults:
@@ -38,3 +47,34 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build and push Docker images
+      run: |
+        docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+        docker build -t alexbudko/gpt-news-server:${{ github.sha }} .
+        docker push alexbudko/gpt-news-server:${{ github.sha }}
+
+  # deploy:
+  #   needs: [frontend, backend]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout repository
+  #     uses: actions/checkout@v2
+
+  #   - name: Set up kubectl
+  #     uses: azure/setup-kubectl@v1
+  #     with:
+  #       version: 'latest'
+
+  #   - name: Deploy to Kubernetes
+  #     run: |
+  #       echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yaml
+  #       kubectl config use-context my-k8s-cluster --kubeconfig=kubeconfig.yaml
+  #       sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-server:${{ github.sha }}/" server.yaml
+  #       sed -i "s/${{ secrets.DOCKER_HUB_USERNAME }}/gpt-news-frontend:${{ github.sha }}/" frontend.yaml
+  #       kubectl apply -f server.yaml --kubeconfig=kubeconfig.yaml
+  #       kubectl apply -f frontend.yaml --kubeconfig=kubeconfig.yaml

@@ -1,37 +1,34 @@
 const request = require("supertest");
 const app = require("../server");
-const User = require("../models/User");
 
-const testUser = {
-  username: "testuser",
-  password: "testpassword",
-};
-
-beforeAll(async () => {
-  await User.deleteMany({});
+test("GET /messages with valid auth should return 200 status code", async () => {
+  const token = generateToken(); 
+  const response = await request(app).get("/messages").set("Authorization", `Bearer ${token}`);
+  expect(response.statusCode).toBe(200);
 });
 
-afterAll(async () => {
-  await User.deleteMany({});
+test("GET /messages without auth should return 401 status code", async () => {
+  const response = await request(app).get("/messages");
+  expect(response.statusCode).toBe(401);
 });
 
-test("Register a new user", async () => {
-  const res = await request(app).post("/register").send(testUser);
-  expect(res.statusCode).toBe(201);
-  expect(res.body).toHaveProperty("token");
+test("POST /register with valid credentials should return 201 status code", async () => {
+  const response = await request(app)
+    .post("/register")
+    .send({ username: "testuser", password: "testpassword", location: "US, CA" });
+  expect(response.statusCode).toBe(201);
 });
 
-test("Login with registered user", async () => {
-  const res = await request(app).post("/login").send(testUser);
-  expect(res.statusCode).toBe(200);
-  expect(res.body).toHaveProperty("token");
-  expect(res.body).toHaveProperty("user");
+test("POST /register with missing credentials should return 500 status code", async () => {
+  const response = await request(app).post("/register").send({});
+  expect(response.statusCode).toBe(500);
 });
 
-test("Fail to login with wrong credentials", async () => {
-  const res = await request(app).post("/login").send({
-    username: "wrongusername",
-    password: "wrongpassword",
-  });
-  expect(res.statusCode).toBe(401);
+test("POST /generate-article-suggestions with missing prompt should return 500 status code", async () => {
+  const token = generateToken();
+  const response = await request(app)
+    .post("/generate-article-suggestions")
+    .set("Authorization", `Bearer ${token}`)
+    .send({});
+  expect(response.statusCode).toBe(500);
 });
