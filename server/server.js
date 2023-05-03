@@ -158,7 +158,7 @@ app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
       .map((message) => message.text)
       .join("\n");
 
-    const context = `Previous queries of the user:\n${previousMessages ? previousMessages : ""}.
+    const context = `Previous queries of the user:${previousMessages}.
       \n User lives in ${req.user.location},
       \n Provide the user with some news articles related to the following topic: ${prompt}`;
 
@@ -187,3 +187,5 @@ app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+module.exports = app;
