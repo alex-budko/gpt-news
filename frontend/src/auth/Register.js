@@ -9,6 +9,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -16,6 +17,7 @@ const Register = () => {
   const [location, setLocation] = useState("");
   const [error, setError] = useState(null);
   const { setCurrentUser, setToken } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +35,7 @@ const Register = () => {
       const data = await response.json();
       setCurrentUser(username);
       setToken(data.token);
+      navigate("/");
     } catch (error) {
       setError(error.message);
     }
@@ -44,6 +47,7 @@ const Register = () => {
         <Text fontSize="3xl">Register</Text>
         <Box>
           <Input
+            isRequired
             bgColor={"blue.400"}
             placeholder="Username"
             value={username}
@@ -52,6 +56,7 @@ const Register = () => {
         </Box>
         <Box>
           <Input
+            isRequired
             bgColor={"blue.400"}
             placeholder="Password"
             type="password"
@@ -63,10 +68,13 @@ const Register = () => {
           placeholder="Select location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
+          defaultValue={1}
+          variant='filled'
+          borderColor='blue.700'
         >
-          <option value="US, NY">US, NY</option>
-          <option value="US, CA">US, CA</option>
-          <option value="US, FL">US, FL</option>
+          <option style={{"backgroundColor": "white"}} value="US, NY">US, NY</option>
+          <option style={{"backgroundColor": "white"}} value="US, CA">US, CA</option>
+          <option style={{"backgroundColor": "white"}} value="US, FL">US, FL</option>
         </Select>
 
         {error && (
