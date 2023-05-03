@@ -10,7 +10,7 @@ import {
   Text,
   DarkMode,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BsRobot, BsFillPersonFill } from "react-icons/bs";
 import "../NewsAggregator.css";
 import { useAuth } from "../context/AuthContext";
@@ -30,8 +30,54 @@ function NewsAggregator() {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const saveMessage = async (text, sender, gptResponses) => {
+    try {
+      await fetch("http://localhost:3001/save-message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ text, sender, gptResponses }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const response = await fetch("http://localhost:3001/messages", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      console.log(data);
+      const convertedMessages = data.messages.flatMap((message) => {
+        const { text, sender, gptResponses } = message;
+        if (sender === "user") {
+          return [{ text, sender }];
+        } else {
+          return [{ text: gptResponses, sender }];
+        }
+      });
+      setMessages(convertedMessages);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [token]);
+
+  // Fetch messages when the component mounts
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
   const handleButtonClick = async () => {
     setMessages([...messages, { text: inputMessage, sender: "user" }]);
+    saveMessage(inputMessage, "user", []);
+
     setInputMessage("");
 
     setLoading(true);
@@ -55,6 +101,7 @@ function NewsAggregator() {
         ...prevMessages,
         { text: gptResponse, sender: "gpt" },
       ]);
+      saveMessage(inputMessage, "gpt", gptResponse);
     } catch (error) {
       console.error(error);
     }

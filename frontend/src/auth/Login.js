@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import { Box, Button, VStack, Input, Text, Center } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const { login } = useAuth(); 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await login(email, password); 
+      await login(username, password); 
       setError(null);
+      console.log("redirect")
+      navigate("/");
     } catch (error) {
       setError(error.message);
     }
@@ -26,9 +30,9 @@ const Login = () => {
         <Box>
           <Input
             bgColor={"blue.400"}
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </Box>
         <Box>

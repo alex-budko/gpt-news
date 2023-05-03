@@ -9,17 +9,18 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("auth-token") || null);
 
-  const login = async (email, password) => {
+  const login = async (username, password) => {
     try {
       const response = await axios.post("http://localhost:3001/login", {
-        email,
+        username,
         password,
       });
       const { token, user } = response.data;
-
+      console.log("user", user)
       localStorage.setItem("auth-token", token);
+      localStorage.setItem("user", user);
       setToken(token);
       setCurrentUser(user);
     } catch (error) {

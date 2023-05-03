@@ -32,6 +32,7 @@ mongoose
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  location: { type: String, default: "US, NY" },
   messages: [
     {
       text: String,
@@ -78,8 +79,8 @@ app.use(passport.initialize());
 // Auth routes
 app.post("/register", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = new User({ username, password });
+    const { username, password, location } = req.body;
+    const user = new User({ username, password, location });
     await user.save();
 
     const payload = { id: user.id };
@@ -96,19 +97,28 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    console.log("Received login request:", { username, password });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const user = await User.findOne({ username });
+    console.log("User found:", user);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid username or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", passwordMatch);
+    if (!passwordMatch) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "2h",
     });
 
-    res.status(200).json({ token });
+    res.status(200).json({ user, token });
   } catch (error) {
+    console.error("Error logging in:", error);
     res.status(500).json({ error: "Error logging in" });
   }
 });
@@ -142,9 +152,19 @@ app.get("/messages", requireAuth, async (req, res) => {
 app.post("/generate-article-suggestions", requireAuth, async (req, res) => {
   try {
     const prompt = req.body.prompt;
+    const previousMessages = req.user.messages
+      .filter((message) => message.sender === "user")
+      .slice(-5)
+      .map((message) => message.text)
+      .join("\n");
+
+    const context = `Previous queries of the user:\n${previousMessages ? previousMessages : ""}.
+      \n User lives in ${req.user.location},
+      \n Provide the user with some news articles related to the following topic: ${prompt}`;
+
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: `Give me news articles related to: ${prompt}`,
+      prompt: context,
       max_tokens: 250,
     });
     const suggestions = response.data.choices[0].text.split(/\n+/);
