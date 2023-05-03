@@ -51,7 +51,6 @@ UserSchema.pre("save", async function (next) {
     //   .createHash("scrypt", { salt: process.env.SCRYPT_SALT, N: 16384, r: 8, p: 1, dkLen: 64 })
     //   .update(this.password)
     //   .digest("hex");
-    this.password = password;
     next();
   } catch (error) {
     return next(error);
