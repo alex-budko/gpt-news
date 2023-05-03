@@ -23,7 +23,7 @@
     "server": "node ../server/server.js",
     "dev": "npx concurrently \"npm start\" \"npm run server\"",
     "build": "react-scripts build",
-    "test": "react-scripts start",
+    "test": "npm start",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
